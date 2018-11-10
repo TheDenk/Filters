@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ImageManipulate
+﻿namespace ImageManipulate
 {
     public struct Matrix
     {
