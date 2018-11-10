@@ -592,7 +592,7 @@ namespace ImageManipulate
 
             return result;
         }
-        public static Bitmap ModifiedApplyHafAlgoritm(Bitmap source, out int[,] halfArray, int incrementOfOutArray = 1)
+        public static Bitmap ModifiedApplyHoughAlgoritm(Bitmap source, out int[,] halfArray, int incrementOfOutArray = 1)
         {
             var width = source.Width;
             var height = source.Height;
@@ -689,9 +689,7 @@ namespace ImageManipulate
             var sourceData = source.LockBits(new Rectangle(new System.Drawing.Point(0, 0), source.Size),
                 ImageLockMode.ReadWrite,
                 source.PixelFormat);
-
-
-
+            
             var sourceStride = sourceData.Stride;
 
             var sourceScan0 = sourceData.Scan0;
@@ -718,7 +716,7 @@ namespace ImageManipulate
             {
                 for (int j = 0; j < halfArray.GetLength(1); j++)
                 {
-                    if ((halfArray[i, j] > level)&&(((j - 90) > -5 && (j - 90) < 5)))
+                    if (halfArray[i, j] > level)//&&(((j - 90) > -5 && (j - 90) < 5)))
                     {
                         Normals.Add(i);
                         Angles.Add(j);

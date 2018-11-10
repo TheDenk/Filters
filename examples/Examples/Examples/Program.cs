@@ -7,21 +7,21 @@ namespace Examples
     {
         static void Main(string[] args)
         {
-
-            Bitmap base_image = (Bitmap)Image.FromFile("test_image.jpg");
+            string path = @"../../../../../imgs/";
+            Bitmap base_image = (Bitmap)Image.FromFile(path + "test_image.jpg");
 
             // Обычный медианный фильтр
             Bitmap median_image = Filter.MedianFilter(base_image, 3);
-            median_image.Save("MedianFilter_image.jpg");
+            median_image.Save(path + "MedianFilter_image.jpg");
 
             // Картинку в серый цвет
             Bitmap gray_image = Filter.ImageToGray(base_image);
-            gray_image.Save("gray_image.jpg");
+            gray_image.Save(path + "gray_image.jpg");
 
             // Размытие матрицами
             double koef = 1d / 16d;
             Bitmap gaus_image = Filter.ApplySmoothMethod(gray_image, Matrix.Gauss3x3, koef);
-            gaus_image.Save("gausBlur_image.jpg");
+            gaus_image.Save(path + "gausBlur_image.jpg");
             
             // Доп. Массивы для нахождений линий на изображении
             int[,] hough_array;
@@ -30,12 +30,12 @@ namespace Examples
             //Применения оператора Собеля
             Bitmap sobel_image = Filter.ApplySobelMethod(gaus_image, Matrix.SobelVertical, Matrix.SobelGorizontal, out atans);
             Bitmap nonmax_image = Filter.NonMaximum(sobel_image, atans);
-            nonmax_image.Save("nonmax_image.jpg");
+            nonmax_image.Save(path + "nonmax_image.jpg");
 
             //постобработка изображения
             Bitmap doubletres_image = Filter.ApplyDoubleTresholding(nonmax_image, 0.3d, 0.7d);
             Filter.PostTreatment(doubletres_image);
-            doubletres_image.Save("doubletres_image.jpg");
+            doubletres_image.Save(path + "doubletres_image.jpg");
 
             //Алгоритм Хафа для нахождени линий
             Bitmap h_image = Filter.ApplyHoughAlgoritm(doubletres_image, out hough_array);
