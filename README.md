@@ -2,7 +2,7 @@
 Custom C# filters for images.
 The library contains a set of different methods for image processing,
 such as Resize, Rotate, Cut and Merge two images.
-There are also simple filters that I used for create Hough algorithm.
+There are also simple filters that I used for creating the Hough algorithm.
 <p>Examples:</p>
 <p>
 Created by algorithms from post: https://habr.com/post/114589/
