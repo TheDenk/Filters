@@ -40,7 +40,7 @@ namespace Examples
             //Алгоритм Хафа для нахождени линий
             Bitmap h_image = Filter.ApplyHoughAlgoritm(doubletres_image, out hough_array);
             Filter.DrawingLineOnImage(base_image, hough_array, 90);
-            base_image.Save("base_img_with_lines.jpg");
+            base_image.Save(path + "base_img_with_lines.jpg");
 
         }
     }
