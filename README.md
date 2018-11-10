@@ -12,7 +12,7 @@ Original image from https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%
 	Original image
 </p>
 <p align="center">
-	<img align="center" src="imgs/test_image.jpg" title="original image">
+	<img width="200" align="center" src="imgs/test_image.jpg" title="original image">
 </p>
 <p align="center">
 	Gray Filter
@@ -24,23 +24,23 @@ Original image from https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%
 	Blur Gaussian Filter
 </p>
 <p align="center">
-	<img align="center" src="imgs/gausBlur_image.jpg" title="blur image">
+	<img width="200" align="center" src="imgs/gausBlur_image.jpg" title="blur image">
 </p>
 <p align="center">
 	Sobel Filter
 </p>
 <p align="center">
-  <img align="center" src="imgs/doubletres_image.jpg" title="sobel image">
+	<img width="200" align="center" src="imgs/nonmax_image.jpg" title="sobel image">
 </p>
 <p align="center">
-	NonMaximun Supression
+	Post processing
 </p>
 <p align="center">
-	<img align="center" src="imgs/nonmax_image.jpg" title="nonmax image">
+  <img width="200" align="center" src="imgs/doubletres_image.jpg" title="sobel image">
 </p>
 <p align="center">
 	Hough algorithm to find lines
 </p>
 <p align="center">
-	<img align="center" src="imgs/base_img_with_lines.jpg" title="image with lines">
+	<img width="200" align="center" src="imgs/base_img_with_lines.jpg" title="image with lines">
 </p>
