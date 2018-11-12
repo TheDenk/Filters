@@ -8,6 +8,19 @@ namespace ImageManipulate
 {
     public static class Filter
     {
+        /// <summary>
+        /// Метод собеля для нахождения границ на изображении.
+        /// Предварительно желательно привести изображение в оттенки серого и размыть для удаления шума.
+        /// Для нахождения градиентов используются матрицы, пример которых имеется в модуле Matrix. 
+        /// Например, матрицы Собеля:
+        /// Matrix.SobelGorizontal, Matrix.SobelVertical.
+        /// </summary>
+        /// <param name="source">Исходная картинка</param>
+        /// <param name="verticaltMatrix">Матрица для нахождения вертикальных границ</param>
+        /// <param name="gorizontalMatrix">Матрица для нахождения горизонтальных границ</param>
+        /// <param name="atanArray">Массив, куда будут записаны длины векторов градиентов</param>
+        /// <param name="koef">Коэффициент, умнажающийся на длину вектора</param>
+        /// <returns>Изображение с выделенными границами.</returns>
         public static Bitmap ApplySobelMethod(Bitmap source, double[,] verticaltMatrix, double[,] gorizontalMatrix, out double[,] atanArray, double koef = 1)
         {
             var width = source.Width;
@@ -92,6 +105,21 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Метод, реализующий размытие изображения различными функциями.
+        /// Пример различных матриц реализован в модуле Matrix.
+        /// Например, матрица для размытия по Гауссу:
+        /// Matrix.Gauss3x3, Matrix.Gauss5x5.
+        /// </summary>
+        /// <param name="source">Исходное изобржение.</param>
+        /// <param name="matrix">Матрица, реализующая размытие.</param>
+        /// <param name="koef">Коэффициент, для приведения значения каждого пикселя в правильный диапазон.
+        /// Значение зависит от выбранной матрицы.
+        /// Например для размытия по Гауссу: 
+        /// Для матрицы Гаусса 3х3 - 1d/16d.
+        /// Для матрицы Гаусса 5х5 - 1d/159d.
+        /// </param>
+        /// <returns>Размытое изображение.</returns>
         public static Bitmap ApplySmoothMethod(Bitmap source, double[,] matrix, double koef)
         {
             var width = source.Width;
@@ -169,6 +197,13 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Метод, бинаризации изображения по определенному порогу. 
+        /// Исходное изображение автоматически приводится в градации серого и сравнивается с заданным порогом.
+        /// </summary>
+        /// <param name="source">Исходное изображение.</param>
+        /// <param name="treshold">Порог для сравнения.</param>
+        /// <returns>Черно-белое изображение.</returns>
         public static Bitmap CreateBinaryImgFromRgb(Bitmap source, int treshold = 115)
         {
             var width = source.Width;
@@ -215,6 +250,13 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Метод, реализующий медианный фильтр.
+        /// Матрица фильтра квадратная, поэтому указывается только одна сторона.
+        /// </summary>
+        /// <param name="sourceBitmap">Исходное изображение.</param>
+        /// <param name="matrixSize">Размер матрицы.</param>
+        /// <returns>Размытое изображение.</returns>
         public static Bitmap MedianFilter(Bitmap sourceBitmap, int matrixSize)
         {
             var sourceData =
@@ -317,6 +359,13 @@ namespace ImageManipulate
 
             return resultBitmap;
         }
+        /// <summary>
+        /// Подавление немаксимумов на изображении. 
+        /// Метод используется для обработки изображений после фильтра Собеля.
+        /// </summary>
+        /// <param name="source">Исходное изображение.(Черно-белое)</param>
+        /// <param name="atanArray">Массив длин векторов градиентов.(см. ApplySobelMethod)</param>
+        /// <returns>Черно-белое изображение.</returns>
         public static Bitmap NonMaximum(Bitmap source, double[,] atanArray)
         {
             var width = source.Width;
@@ -415,6 +464,11 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Преобразование изображение в оттенки серого.
+        /// </summary>
+        /// <param name="source">Исходное изображение.</param>
+        /// <returns>Изображение в оттенках серого.</returns>
         public static Bitmap ImageToGray(Bitmap source)
         {
 
@@ -461,6 +515,15 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Применение двойного порогового фильтра для постобработки изображения после применения метода Собеля.
+        /// Значения ниже и выше заданного уровня будут однозначно определены как черные и белые соответственно.
+        /// Значения в промежутке необходимо обработать отдельно. см функцию PostTreatment.
+        /// </summary>
+        /// <param name="source">Исходное изображение.</param>
+        /// <param name="lowLevel">Нижний порог.</param>
+        /// <param name="highLevel">Верхний порог</param>
+        /// <returns></returns>
         public static Bitmap ApplyDoubleTresholding(Bitmap source, double lowLevel, double highLevel)
         {
             var width = source.Width;
@@ -506,6 +569,15 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Алгоритм Хафа для нахождения прямых на изображении. На вход подается изображение с границами. 
+        /// Т.е. после фильтра Собеля и обработки.
+        /// </summary>
+        /// <param name="source">Изображение с границами.</param>
+        /// <param name="halfArray">Протранство Хафа. (Аккумулятор)</param>
+        /// <param name="incrementOfOutArray">Как быстро увеличивается значения пикселей пространства Хафа.
+        /// (Как быстро растут значения аккумулятора)</param>
+        /// <returns></returns>
         public static Bitmap ApplyHoughAlgoritm(Bitmap source, out int[,] halfArray, int incrementOfOutArray = 1)
         {
             var width = source.Width;
@@ -592,6 +664,14 @@ namespace ImageManipulate
 
             return result;
         }
+        /// <summary>
+        /// Измененный алгоритм для нахождения только вертикальных и горизонтальных прямых. 
+        /// см. оригинальный алгоритм. ApplyHoughAlgoritm
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="halfArray"></param>
+        /// <param name="incrementOfOutArray"></param>
+        /// <returns></returns>
         public static Bitmap ModifiedApplyHoughAlgoritm(Bitmap source, out int[,] halfArray, int incrementOfOutArray = 1)
         {
             var width = source.Width;
@@ -681,7 +761,13 @@ namespace ImageManipulate
 
             return result;
         }
-        public static void DrawingLineOnImage(Bitmap source, int[,] halfArray, double level)
+        /// <summary>
+        /// Метод рисует на изображении линии, из пространства Хафа.
+        /// </summary>
+        /// <param name="source">Изображение на котором необходимо нарисовать прямые.</param>
+        /// <param name="houghArray">Аккумулятор Хафа.</param>
+        /// <param name="level">Порог, выше значения которого рисуются прямые.</param>
+        public static void DrawingLineOnImage(Bitmap source, int[,] houghArray, double level)
         {
             var width = source.Width;
             var height = source.Height;
@@ -712,11 +798,11 @@ namespace ImageManipulate
             var Normals = new List<int>();
             var Angles = new List<int>();
 
-            for (int i = 0; i < halfArray.GetLength(0); i++)
+            for (int i = 0; i < houghArray.GetLength(0); i++)
             {
-                for (int j = 0; j < halfArray.GetLength(1); j++)
+                for (int j = 0; j < houghArray.GetLength(1); j++)
                 {
-                    if (halfArray[i, j] > level)//&&(((j - 90) > -5 && (j - 90) < 5)))
+                    if (houghArray[i, j] > level)//&&(((j - 90) > -5 && (j - 90) < 5)))
                     {
                         Normals.Add(i);
                         Angles.Add(j);
@@ -733,7 +819,7 @@ namespace ImageManipulate
                     {
                         var sourceRow = (byte*)sourceScan0 + (y * sourceStride);
 
-                        double p = Normals[i] - halfArray.GetLength(0) / 2;
+                        double p = Normals[i] - houghArray.GetLength(0) / 2;
                         double cos = sinCos[1, Angles[i]];
                         double sin = sinCos[0, Angles[i]];
 
@@ -752,6 +838,11 @@ namespace ImageManipulate
 
             source.UnlockBits(sourceData);
         }
+        /// <summary>
+        /// Постобработка изображения, убирает промежуточные значения пикселей. 
+        /// Используется после двойной пороговой филтрации.
+        /// </summary>
+        /// <param name="source">Исходное изображение.</param>
         public static void PostTreatment(Bitmap source)
         {
             var width = source.Width;
@@ -813,6 +904,15 @@ namespace ImageManipulate
 
             source.UnlockBits(sourceData);
         }
+        /// <summary>
+        /// Метод обрезает изображение по заданным координатам.
+        /// </summary>
+        /// <param name="source">Исходное изображение.</param>
+        /// <param name="leftX">Координата X левого верхнего угла.</param>
+        /// <param name="rightX">Координата X правого нижнего угла.</param>
+        /// <param name="topY">Координата Y левого верхнего угла.</param>
+        /// <param name="botY">Координата Y правого нижнего угла</param>
+        /// <returns>Изображение между координатами.</returns>
         public static Bitmap CutToXAndY(Bitmap source, int leftX, int rightX, int topY, int botY)
         {
             var width = rightX - leftX;
@@ -856,6 +956,11 @@ namespace ImageManipulate
             result.UnlockBits(resultData);
             return result;
         }
+        /// <summary>
+        /// Метод копирует изображение.
+        /// </summary>
+        /// <param name="image">Исходное изображение.</param>
+        /// <returns>Новый экземпляр изображения.</returns>
         public static Bitmap CopyImage(Bitmap image)
         {
             var width = image.Width;
