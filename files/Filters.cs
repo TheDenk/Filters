@@ -217,8 +217,7 @@ namespace ImageManipulate
             var resultData = result.LockBits(new Rectangle(new System.Drawing.Point(0, 0), result.Size),
                 ImageLockMode.ReadWrite,
                 source.PixelFormat);
-
-
+            
             var sourceStride = sourceData.Stride;
             var resultStride = resultData.Stride;
 
@@ -767,20 +766,20 @@ namespace ImageManipulate
         /// <param name="source">Изображение на котором необходимо нарисовать прямые.</param>
         /// <param name="houghArray">Аккумулятор Хафа.</param>
         /// <param name="level">Порог, выше значения которого рисуются прямые.</param>
-        public static void DrawingLineOnImage(Bitmap source, int[,] houghArray, double level)
+        public static Bitmap DrawingLineOnImage(Bitmap source, int[,] houghArray, double level)
         {
+
             var width = source.Width;
             var height = source.Height;
 
-            var sourceData = source.LockBits(new Rectangle(new System.Drawing.Point(0, 0), source.Size),
+            var result = (Bitmap)source.Clone(); 
+            var resultData = result.LockBits(new Rectangle(new System.Drawing.Point(0, 0), result.Size),
                 ImageLockMode.ReadWrite,
                 source.PixelFormat);
             
-            var sourceStride = sourceData.Stride;
-
-            var sourceScan0 = sourceData.Scan0;
-
-            var resultPixelSize = sourceStride / width;
+            var resultStride = resultData.Stride;
+            var resultScan0 = resultData.Scan0;
+            var resultPixelSize = resultStride / width;
 
             double rad = Math.PI / 180;
 
@@ -812,12 +811,11 @@ namespace ImageManipulate
 
             unsafe
             {
-
                 for (var i = 0; i < Normals.Count; i++)
                 {
                     for (var y = 0; y < height; y++)
                     {
-                        var sourceRow = (byte*)sourceScan0 + (y * sourceStride);
+                        var sourceRow = (byte*)resultScan0 + (y * resultStride);
 
                         double p = Normals[i] - houghArray.GetLength(0) / 2;
                         double cos = sinCos[1, Angles[i]];
@@ -831,51 +829,45 @@ namespace ImageManipulate
                             sourceRow[x * resultPixelSize + 1] = 0;
                             sourceRow[x * resultPixelSize + 2] = 255;
                         }
-
                     }
                 }
             }
 
-            source.UnlockBits(sourceData);
+            result.UnlockBits(resultData);
+            return result;
         }
         /// <summary>
         /// Постобработка изображения, убирает промежуточные значения пикселей. 
         /// Используется после двойной пороговой филтрации.
         /// </summary>
         /// <param name="source">Исходное изображение.</param>
-        public static void PostTreatment(Bitmap source)
+        public static Bitmap PostTreatment(Bitmap source)
         {
             var width = source.Width;
             var height = source.Height;
 
-            var sourceData = source.LockBits(new Rectangle(new System.Drawing.Point(0, 0), source.Size),
+            var result = (Bitmap)source.Clone(); //new Bitmap(width, height, source.PixelFormat);
+            var resultData = result.LockBits(new Rectangle(new System.Drawing.Point(0, 0), result.Size),
                 ImageLockMode.ReadWrite,
                 source.PixelFormat);
-
-
-
-            var sourceStride = sourceData.Stride;
-
-            var sourceScan0 = sourceData.Scan0;
-
-            var resultPixelSize = sourceStride / width;
-
-
+            
+            var resultStride = resultData.Stride;
+            var resultScan0 = resultData.Scan0;
+            var resultPixelSize = resultStride / width;
+            
             unsafe
             {
                 for (var y = 1; y < height - 1; y++)
                 {
-                    var sourceRow = (byte*)sourceScan0 + (y * sourceStride);
+                    var sourceRow = (byte*)resultScan0 + (y * resultStride);
 
                     for (var x = 1; x < width - 1; x++)
                     {
-
-
                         if (sourceRow[x * resultPixelSize] == 0)
                         {
                             for (int i = -1; i <= 1; i++)
                             {
-                                var selectRow = (byte*)sourceScan0 + ((y + i) * sourceStride);
+                                var selectRow = (byte*)resultScan0 + ((y + i) * resultStride);
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (selectRow[(x + j) * resultPixelSize] == 0 ||
@@ -902,108 +894,9 @@ namespace ImageManipulate
             }
 
 
-            source.UnlockBits(sourceData);
-        }
-        /// <summary>
-        /// Метод обрезает изображение по заданным координатам.
-        /// </summary>
-        /// <param name="source">Исходное изображение.</param>
-        /// <param name="leftX">Координата X левого верхнего угла.</param>
-        /// <param name="rightX">Координата X правого нижнего угла.</param>
-        /// <param name="topY">Координата Y левого верхнего угла.</param>
-        /// <param name="botY">Координата Y правого нижнего угла</param>
-        /// <returns>Изображение между координатами.</returns>
-        public static Bitmap CutToXAndY(Bitmap source, int leftX, int rightX, int topY, int botY)
-        {
-            var width = rightX - leftX;
-            var height = botY - topY;
-
-            var sourceData = source.LockBits(new Rectangle(new System.Drawing.Point(0, 0), source.Size),
-                ImageLockMode.ReadOnly,
-                source.PixelFormat);
-
-            var result = new Bitmap(width, height, source.PixelFormat);
-            var resultData = result.LockBits(new Rectangle(new System.Drawing.Point(0, 0), result.Size),
-                ImageLockMode.ReadWrite,
-                source.PixelFormat);
-
-
-            var sourceStride = sourceData.Stride;
-            var resultStride = resultData.Stride;
-
-            var sourceScan0 = sourceData.Scan0;
-            var resultScan0 = resultData.Scan0;
-
-            var resultPixelSize = resultStride / width;
-            unsafe
-            {
-                for (var y = topY; y < topY + height; y++)
-                {
-                    var sourceRow = (byte*)sourceScan0 + (y * sourceStride);
-                    var resultRow = (byte*)resultScan0 + ((y - topY) * resultStride);
-
-                    for (var x = leftX; x < leftX + width; x++)
-                    {
-                        resultRow[(x - leftX) * resultPixelSize] = sourceRow[x * resultPixelSize];
-                        resultRow[(x - leftX) * resultPixelSize + 1] = sourceRow[x * resultPixelSize + 1];
-                        resultRow[(x - leftX) * resultPixelSize + 2] = sourceRow[x * resultPixelSize + 2];
-
-                    }
-                }
-            }
-
-            source.UnlockBits(sourceData);
             result.UnlockBits(resultData);
             return result;
         }
-        /// <summary>
-        /// Метод копирует изображение.
-        /// </summary>
-        /// <param name="image">Исходное изображение.</param>
-        /// <returns>Новый экземпляр изображения.</returns>
-        public static Bitmap CopyImage(Bitmap image)
-        {
-            var width = image.Width;
-            var height = image.Height;
-
-            var sourceData = image.LockBits(new Rectangle(new System.Drawing.Point(0, 0), image.Size),
-                ImageLockMode.ReadOnly,
-                image.PixelFormat);
-
-            var result = new Bitmap(width, height, image.PixelFormat);
-            var resultData = result.LockBits(new Rectangle(new System.Drawing.Point(0, 0), result.Size),
-                ImageLockMode.ReadWrite,
-                image.PixelFormat);
-
-
-            var sourceStride = sourceData.Stride;
-            var resultStride = resultData.Stride;
-
-            var sourceScan0 = sourceData.Scan0;
-            var resultScan0 = resultData.Scan0;
-
-            var resultPixelSize = resultStride / width;
-            unsafe
-            {
-                for (var y = 0; y < height - 0; y++)
-                {
-                    var sourceRow = (byte*)sourceScan0 + (y * sourceStride);
-                    var resultRow = (byte*)resultScan0 + (y * resultStride);
-
-                    for (var x = 0; x < width - 0; x++)
-                    {
-
-                        resultRow[x * resultPixelSize] = sourceRow[x * resultPixelSize];
-                        resultRow[x * resultPixelSize + 1] = sourceRow[x * resultPixelSize + 1];
-                        resultRow[x * resultPixelSize + 2] = sourceRow[x * resultPixelSize + 2];
-
-                    }
-                }
-            }
-
-            image.UnlockBits(sourceData);
-            result.UnlockBits(resultData);
-            return result;
-        }
+        
     }
 }
