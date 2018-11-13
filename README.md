@@ -36,7 +36,7 @@ Original image from https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%
 	Post processing
 </p>
 <p align="center">
-  <img width="200" align="center" src="imgs/doubletres_image.jpg" title="sobel image">
+  <img width="200" align="center" src="imgs/posttreatment_image.jpg" title="posttreatment_image">
 </p>
 <p align="center">
 	Hough algorithm to find lines
