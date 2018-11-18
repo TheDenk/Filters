@@ -44,3 +44,9 @@ Original image from https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%
 <p align="center">
 	<img width="200" align="center" src="imgs/base_img_with_lines.jpg" title="image with lines">
 </p>
+<p align="center">
+	Hough space 
+</p>
+<p align="center">
+	<img width="200" align="center" src="imgs/hough_space_image.jpg" title="Hough space">
+</p>

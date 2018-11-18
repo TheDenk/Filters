@@ -1,4 +1,5 @@
 ﻿using ImageManipulate;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Examples
@@ -42,12 +43,13 @@ namespace Examples
             Bitmap image_with_lines = Filter.DrawingLineOnImage(original_image, hough_array, 90);
             image_with_lines.Save(path + "base_img_with_lines.jpg");
 
+            ManipulateImage.Resize(h_image, 320, 280).Save(path + "hough_space_image.jpg");
 
             //Проверка времени выполнения копирования изображений различными методами
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            System.Collections.Generic.List<long> _new = new System.Collections.Generic.List<long>();
-            System.Collections.Generic.List<long> _clone = new System.Collections.Generic.List<long>();
-            System.Collections.Generic.List<long> _copy = new System.Collections.Generic.List<long>();
+            List<long> _new = new List<long>();
+            List<long> _clone = new List<long>();
+            List<long> _copy = new List<long>();
             
             sw.Start();
             long last_time = sw.ElapsedTicks;
