@@ -5,9 +5,9 @@ such as Resize, Rotate, Cut and Merge two images.
 There are also simple filters that I used for creating the Hough algorithm.
 <p>Examples:</p>
 <p>
-Created by algorithms from post: https://habr.com/post/114589/
+Created by algorithms from <a href="https://habr.com/post/114589/">this post</a>
 </p>
-Original image from https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%BE%D0%B1%D0%BB%D0%B0%D0%BA%D0%B0%D1%85
+<a href="https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BC_%D0%B2_%D0%BE%D0%B1%D0%BB%D0%B0%D0%BA%D0%B0%D1%85">Original image </a>
 <p align="center">
 	Original image
 </p>
